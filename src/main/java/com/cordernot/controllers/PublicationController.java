@@ -50,7 +50,7 @@ public class PublicationController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    String email = authentication.getName(); // getName ressort l'email ici 
+    String email = authentication.getName(); // getName ressort l'email ici
     Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
 
     if (!optionalCustomer.isPresent()) {
@@ -66,6 +66,6 @@ public class PublicationController {
 
     publicationRepository.save(publication);
 
-    return ResponseEntity.ok(publication);
+    return ResponseEntity.ok(publication); //test
   }
 }
