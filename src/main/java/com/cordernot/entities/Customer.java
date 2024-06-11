@@ -7,10 +7,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 @Data
 @Entity
+@AllArgsConstructor // ces 2 permets d'utiliser builder normalement
+@NoArgsConstructor // ces 2 permets d'utiliser builder normalement pour les tests
+@Builder
 public class Customer {
 
   @Id
@@ -23,6 +30,6 @@ public class Customer {
 
   private String email;
 
-  // @OneToMany(mappedBy = "customer")
-  // private List<Publication> publications;
+  @OneToMany(mappedBy = "customer")
+  private List<Publication> publications;
 }

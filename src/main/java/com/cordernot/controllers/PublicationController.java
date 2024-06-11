@@ -21,6 +21,8 @@ import com.cordernot.entities.Customer;
 import com.cordernot.entities.Publication;
 import com.cordernot.repository.CustomerRepository;
 import com.cordernot.repository.PublicationRepository;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -41,6 +43,17 @@ public class PublicationController {
     List<Publication> publications = publicationRepository.findAll();
     return ResponseEntity.ok(publications);
   }
+
+  @GetMapping("messages")
+  public ResponseEntity<List<Publication>> getUserPub() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName(); // getName ressort l'email ici
+    Optional<Customer> customer= customerRepository.findByEmail(email);
+
+    List<Publication> publications = publicationRepository.findByCustomer(customer);
+    return ResponseEntity.ok(publications);
+  }
+  
 
 
   @PostMapping

@@ -10,10 +10,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 @Entity
+@AllArgsConstructor // ces 2 permets d'utiliser builder normalement
+@NoArgsConstructor // ces 2 permets d'utiliser builder normalement pour les tests
+@Builder
 public class Publication {
 
   @Id
@@ -26,6 +33,7 @@ public class Publication {
 
   private int dislikes;
 
+  // @NotNull
   @ManyToOne
   @JoinColumn(name = "customer_id")
   private Customer customer;
