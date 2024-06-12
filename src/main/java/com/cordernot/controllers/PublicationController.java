@@ -61,11 +61,11 @@ public class PublicationController {
     return ResponseEntity.ok(publications);
   }
 
-  // @PostMapping("/{publicationId}/like")
-  //   public ResponseEntity<Publication> toggleLike(@PathVariable Long publicationId, @RequestParam Long customerId) {
-  //       Publication updatedPublication = publicationService.toggleLike(publicationId, customerId);
-  //       return ResponseEntity.ok(updatedPublication);
-  //   }
+  @PostMapping("/{publicationId}/like")
+    public ResponseEntity<Publication> toggleLike(@PathVariable Long publicationId, @RequestParam Long customerId) {
+        Publication updatedPublication = publicationService.toggleLike(publicationId, customerId);
+        return ResponseEntity.ok(updatedPublication);
+    }
   
   
   @PostMapping
