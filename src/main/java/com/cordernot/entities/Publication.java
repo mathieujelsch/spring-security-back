@@ -4,11 +4,14 @@ import java.util.Optional;
 
 import org.springframework.security.core.userdetails.User;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,13 +36,14 @@ public class Publication {
 
   private int dislikes;
 
-  // @NotNull
+  @NotNull
   @ManyToOne
   @JoinColumn(name = "customer_id")
+  @JsonBackReference
   private Customer customer;
 
-  public void setCustomerId(Long currentUserId) {
-    // this.customer = new Customer(); // Assuming a new Customer object needs to be created
-    this.customer.setId(currentUserId);
-  }
+  // public void setCustomerId(Long currentUserId) {
+  //   // this.customer = new Customer(); // Assuming a new Customer object needs to be created
+  //   this.customer.setId(currentUserId);
+  // }
 }

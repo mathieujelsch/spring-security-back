@@ -2,6 +2,8 @@ package com.cordernot.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,5 +33,6 @@ public class Customer {
   private String email;
 
   @OneToMany(mappedBy = "customer")
+  @JsonManagedReference  // ca a corrigé le problème ou que je pouvais faire qu'une seule publication, idem dans publication model
   private List<Publication> publications;
 }

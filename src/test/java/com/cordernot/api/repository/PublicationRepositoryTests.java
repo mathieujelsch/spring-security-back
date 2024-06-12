@@ -26,7 +26,7 @@ public class PublicationRepositoryTests {
     
     // public PublicationRepositoryTests(PublicationRepository publicationRepository) {
     //     this.publicationRepository = publicationRepository;
-    // }
+    // } // pas besoin de ca c'est fait par autowired
 
     @Test
     public void PublicationRepository_SaveAll_ReturnsSavePublication() {

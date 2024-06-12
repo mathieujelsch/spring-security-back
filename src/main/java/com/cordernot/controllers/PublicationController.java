@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -11,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,8 @@ import com.cordernot.entities.Customer;
 import com.cordernot.entities.Publication;
 import com.cordernot.repository.CustomerRepository;
 import com.cordernot.repository.PublicationRepository;
+import com.cordernot.services.PublicationService;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -32,6 +36,9 @@ public class PublicationController {
   private PublicationRepository publicationRepository;
 
   private CustomerRepository customerRepository;
+
+   @Autowired
+    private PublicationService publicationService;
 
   public PublicationController(PublicationRepository publicationRepository, CustomerRepository customerRepository) {
     this.publicationRepository = publicationRepository;
@@ -53,9 +60,14 @@ public class PublicationController {
     List<Publication> publications = publicationRepository.findByCustomer(customer);
     return ResponseEntity.ok(publications);
   }
+
+  // @PostMapping("/{publicationId}/like")
+  //   public ResponseEntity<Publication> toggleLike(@PathVariable Long publicationId, @RequestParam Long customerId) {
+  //       Publication updatedPublication = publicationService.toggleLike(publicationId, customerId);
+  //       return ResponseEntity.ok(updatedPublication);
+  //   }
   
-
-
+  
   @PostMapping
   public ResponseEntity<Publication> createPublication(@RequestBody PublicationRequest publicationRequest) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -81,4 +93,5 @@ public class PublicationController {
 
     return ResponseEntity.ok(publication); //test
   }
+
 }
