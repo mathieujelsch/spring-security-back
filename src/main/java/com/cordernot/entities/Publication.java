@@ -1,11 +1,13 @@
 package com.cordernot.entities;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.User;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,8 +45,8 @@ public class Publication {
   @JsonBackReference
   private Customer customer;
 
-  // public void setCustomerId(Long currentUserId) {
-  //   // this.customer = new Customer(); // Assuming a new Customer object needs to be created
-  //   this.customer.setId(currentUserId);
-  // }
+  public Long getCustomerId() {
+    return customer != null ? customer.getId() : null;
+  }
+
 }

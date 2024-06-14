@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.cordernot.entities.CustomUserDetails;
 import com.cordernot.entities.Customer;
 import com.cordernot.repository.CustomerRepository;
 
@@ -23,10 +24,17 @@ public class CustomerServiceImpl implements UserDetailsService {
   }
 
   @Override
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-    Customer customer = customerRepository.findByEmail(email)
-              .orElseThrow(() -> new UsernameNotFoundException("Customer not found with email:" + email));
-    return new User(customer.getEmail(), customer.getPassword(), Collections.emptyList());
-  }
+        return new CustomUserDetails(
+                customer.getEmail(),
+                customer.getPassword(),
+                String.valueOf(customer.getId()), // Convertir l'ID en String si nécessaire
+                // Ajoutez les rôles/authorités si nécessaire
+                // customer.getRoles()
+                Collections.emptyList() // Pour cet exemple, nous retournons une liste vide d'authorités
+        );
+    }
 }

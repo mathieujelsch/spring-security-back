@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "publication_like")
-public class Like {
+@Table(name = "publication_dislike")
+public class Dislike {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

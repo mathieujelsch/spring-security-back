@@ -6,6 +6,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cordernot.dto.LoginRequest;
 import com.cordernot.dto.LoginResponse;
+import com.cordernot.entities.CustomUserDetails;
 import com.cordernot.services.jwt.CustomerServiceImpl;
 import com.cordernot.utils.JwtUtil;
 
@@ -50,8 +52,12 @@ public class LoginController {
             return null;
         }
         final UserDetails userDetails = customerService.loadUserByUsername(loginRequest.getEmail());
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
-
+        if (userDetails instanceof CustomUserDetails) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+        final String jwt = jwtUtil.generateToken(userDetails.getUsername(), customUserDetails.getCustomerId());
         return new LoginResponse(jwt);
+    } else {
+        throw new UsernameNotFoundException("User details are not of expected type");
+    }
     }
 }
