@@ -1,6 +1,7 @@
 package com.cordernot.api.controller;
 
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.cordernot.controllers.PublicationController;
+import com.cordernot.dto.PublicationRequest;
 import com.cordernot.entities.Customer;
 import com.cordernot.entities.Publication;
 import com.cordernot.repository.CustomerRepository;
@@ -64,7 +66,7 @@ public class PublicationControllerTests {
         when(dislikeRepository.findByPublicationId(publicationId)).thenReturn(Collections.emptyList());
         // doNothing().when(likeRepository).delete(any());
         // doNothing().when(dislikeRepository).delete(any());
-        doNothing().when(publicationRepository).delete(any());
+        // doNothing().when(publicationRepository).delete(any());
 
         // Act
         ResponseEntity<Void> response = publicationController.deletePublication(publicationId);
@@ -75,6 +77,8 @@ public class PublicationControllerTests {
         verify(dislikeRepository, times(1)).findByPublicationId(publicationId);
 
         verify(publicationRepository, times(1)).delete(any());
+
+        assertEquals(null, response.getBody());
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
@@ -89,11 +93,11 @@ public class PublicationControllerTests {
         Publication publication = Publication.builder().id(publicationId).content("hello").likes(1).dislikes(1).customer(customer).build();
 
         when(publicationRepository.findById(publicationId)).thenReturn(Optional.of(publication));
-        when(likeRepository.findByPublicationId(publicationId)).thenReturn(Collections.emptyList());
-        when(dislikeRepository.findByPublicationId(publicationId)).thenReturn(Collections.emptyList());
+        // when(likeRepository.findByPublicationId(publicationId)).thenReturn(Collections.emptyList());
+        // when(dislikeRepository.findByPublicationId(publicationId)).thenReturn(Collections.emptyList());
         // doNothing().when(likeRepository).delete(any());
         // doNothing().when(dislikeRepository).delete(any());
-        doNothing().when(publicationRepository).delete(any());
+        // doNothing().when(publicationRepository).delete(any());
 
         // Act
         ResponseEntity<Void> response = publicationController.deletePublication(publicationId);
@@ -105,10 +109,35 @@ public class PublicationControllerTests {
 
         verify(publicationRepository, times(1)).delete(any());
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertEquals(null, response.getBody());
 
-        // Optional<Publication> deletedPublication = publicationRepository.findById(publicationId);
-        // Assertions.assertThat(deletedPublication).isEmpty(); 
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testUpdatePublication() {
+        // Arrange
+        Long publicationId = 1L;
+        PublicationRequest publicationRequest = new PublicationRequest();
+        publicationRequest.setContent("Updated content");
+
+        Publication existingPublication = new Publication();
+        existingPublication.setId(publicationId);
+        existingPublication.setContent("Original content");
+
+        when(publicationRepository.findById(publicationId)).thenReturn(Optional.of(existingPublication));
+        when(publicationRepository.save(any(Publication.class))).thenReturn(existingPublication);
+
+        // Act
+        ResponseEntity<Publication> response = publicationController.updatePublication(publicationId, publicationRequest);
+
+        // Assert
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Updated content", response.getBody().getContent());
+
+        verify(publicationRepository, times(1)).findById(publicationId);
+        verify(publicationRepository, times(1)).save(existingPublication);
     }
 
 }
