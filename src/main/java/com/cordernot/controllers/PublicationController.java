@@ -32,6 +32,8 @@ import com.cordernot.repository.PublicationRepository;
 import com.cordernot.services.PublicationService;
 
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -134,4 +136,15 @@ public class PublicationController {
   }
   
 
+  @PutMapping("/{publicationId}")
+  public ResponseEntity<Publication> updatePublication(@PathVariable Long publicationId, @RequestBody PublicationRequest publicationRequest) {
+    Publication publication = publicationRepository.findById(publicationId)
+                .orElseThrow(() -> new RuntimeException("Publication not found"));
+
+    publication.setContent(publicationRequest.getContent());
+
+    // Enregistrer la publication mise à jour
+    publicationRepository.save(publication);
+    return ResponseEntity.ok(publication);
+  }
 }

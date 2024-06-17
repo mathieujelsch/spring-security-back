@@ -41,4 +41,42 @@ public class PublicationRepositoryTests {
         Assertions.assertThat(savedPubli).isNotNull();
         Assertions.assertThat(savedPubli.getContent()).isEqualTo("wahoo");
     }
+
+    @Test
+    public void DeleteFromPublicationRepoWithoutLike(){
+
+        Customer customer = Customer.builder().email("test@gmail").name("test").build();
+        Customer savedCustomer = customerRepository.save(customer);
+
+        Publication publication = Publication.builder().content("hello").customer(savedCustomer).build();
+        Publication publication2 = Publication.builder().content("hello2").customer(savedCustomer).build();
+
+        publicationRepository.save(publication);
+        publicationRepository.save(publication2);
+
+        publicationRepository.delete(publication);
+
+        Assertions.assertThat(publicationRepository.count()).isEqualTo(1);
+        Assertions.assertThat(publicationRepository.findById(publication2.getId())).isPresent();
+        Assertions.assertThat(publicationRepository.findById(publication.getId())).isNotPresent();
+    }
+
+    @Test
+    public void DeleteFromPublicationRepoWithLike(){
+
+        Customer customer = Customer.builder().email("test@gmail").name("test").build();
+        Customer savedCustomer = customerRepository.save(customer);
+
+        Publication publication = Publication.builder().content("hello").likes(1).dislikes(1).customer(savedCustomer).build();
+        Publication publication2 = Publication.builder().content("hello2").customer(savedCustomer).build();
+
+        publicationRepository.save(publication);
+        publicationRepository.save(publication2);
+
+        publicationRepository.delete(publication);
+
+        Assertions.assertThat(publicationRepository.count()).isEqualTo(1);
+        Assertions.assertThat(publicationRepository.findById(publication2.getId())).isPresent();
+        Assertions.assertThat(publicationRepository.findById(publication.getId())).isNotPresent();
+    }
 }
