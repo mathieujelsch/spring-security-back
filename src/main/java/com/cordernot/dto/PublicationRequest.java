@@ -10,4 +10,6 @@ public class PublicationRequest {
   private int likes;
 
   private int dislikes;
+
+  private String comment;
 }

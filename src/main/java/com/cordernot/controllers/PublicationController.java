@@ -24,7 +24,9 @@ import com.cordernot.dto.PublicationRequest;
 import com.cordernot.entities.Customer;
 import com.cordernot.entities.Dislike;
 import com.cordernot.entities.Like;
+import com.cordernot.entities.Comment;
 import com.cordernot.entities.Publication;
+import com.cordernot.repository.CommentRepository;
 import com.cordernot.repository.CustomerRepository;
 import com.cordernot.repository.DislikeRepository;
 import com.cordernot.repository.LikeRepository;
@@ -45,14 +47,17 @@ public class PublicationController {
 
   private CustomerRepository customerRepository;
 
-   @Autowired
-    private PublicationService publicationService;
+  @Autowired
+  private PublicationService publicationService;
 
-    @Autowired
-    private LikeRepository likeRepository;
+  @Autowired
+  private LikeRepository likeRepository;
 
-    @Autowired
-    private DislikeRepository dislikeRepository;
+  @Autowired
+  private DislikeRepository dislikeRepository;
+
+  @Autowired
+  private CommentRepository commentRepository;
 
   public PublicationController(PublicationRepository publicationRepository, CustomerRepository customerRepository) {
     this.publicationRepository = publicationRepository;
@@ -85,6 +90,39 @@ public class PublicationController {
   public ResponseEntity<Publication> toggleDislike(@PathVariable Long publicationId, @RequestParam Long customerId) {
       Publication updatedPublication = publicationService.toggleDislike(publicationId, customerId);
       return ResponseEntity.ok(updatedPublication);
+  }
+
+  @PostMapping("/{publicationId}/comment")
+  public ResponseEntity<Publication> commentPub(@PathVariable Long publicationId, @RequestParam Long customerId, @RequestBody PublicationRequest publicationRequest) {
+    Publication publication = publicationRepository.findById(publicationId)
+                .orElseThrow(() -> new RuntimeException("Publication not found"));
+
+    Customer customer = customerRepository.findById(customerId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    Comment comment = Comment.builder()
+      .customer(customer)
+      .publication(publication)
+      .comment(publicationRequest.getComment()) // setting the comment text
+      .build();
+    
+    commentRepository.save(comment);
+
+    // Ajouter le commentaire à la publication
+    publication.getComments().add(comment);
+
+    return ResponseEntity.ok(publication);
+  }
+
+  @GetMapping("/{publicationId}/comments")
+  public ResponseEntity<List<Comment>> getComment(@PathVariable Long publicationId) {
+    Publication publication = publicationRepository.findById(publicationId)
+                .orElseThrow(() -> new RuntimeException("Publication not found"));
+
+            // List<Comment> findByPublicationId(Long publicationId);
+    List<Comment> comments = commentRepository.findByPublicationId(publicationId);        
+
+    return ResponseEntity.ok(comments);
   }
   
   @PostMapping
@@ -128,6 +166,11 @@ public class PublicationController {
      List<Dislike> dislikes = dislikeRepository.findByPublicationId(publicationId);
      for (Dislike dislike : dislikes) {
          dislikeRepository.delete(dislike);
+     }
+
+     List<Comment> comments = commentRepository.findByPublicationId(publicationId);
+     for (Comment comment : comments) {
+         commentRepository.delete(comment);
      }
                         
 

@@ -1,13 +1,14 @@
 package com.cordernot.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.User;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,6 +45,9 @@ public class Publication {
   @JoinColumn(name = "customer_id")
   @JsonBackReference
   private Customer customer;
+
+  @OneToMany
+  private List<Comment> comments = new ArrayList<>();
 
   public Long getCustomerId() {
     return customer != null ? customer.getId() : null;
