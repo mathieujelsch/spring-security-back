@@ -24,11 +24,13 @@ import com.cordernot.dto.PublicationRequest;
 import com.cordernot.entities.Customer;
 import com.cordernot.entities.Dislike;
 import com.cordernot.entities.Like;
+import com.cordernot.entities.LikeComment;
 import com.cordernot.entities.Comment;
 import com.cordernot.entities.Publication;
 import com.cordernot.repository.CommentRepository;
 import com.cordernot.repository.CustomerRepository;
 import com.cordernot.repository.DislikeRepository;
+import com.cordernot.repository.LikeCommentRepository;
 import com.cordernot.repository.LikeRepository;
 import com.cordernot.repository.PublicationRepository;
 import com.cordernot.services.PublicationService;
@@ -58,6 +60,10 @@ public class PublicationController {
 
   @Autowired
   private CommentRepository commentRepository;
+
+  
+  @Autowired
+  private LikeCommentRepository likeCommentRepository;
 
   public PublicationController(PublicationRepository publicationRepository, CustomerRepository customerRepository) {
     this.publicationRepository = publicationRepository;
@@ -154,7 +160,7 @@ public class PublicationController {
   @DeleteMapping("/{publicationId}")
   public ResponseEntity<Void> deletePublication(@PathVariable Long publicationId) {
     Publication publication = publicationRepository.findById(publicationId)
-                .orElseThrow(() -> new RuntimeException("Publication not found"));
+                .orElseThrow(() -> new RuntimeException("Publication not found"));                       
 
      // Supprimer les likes associés à la publication
      List<Like> likes = likeRepository.findByPublicationId(publicationId);
@@ -170,10 +176,13 @@ public class PublicationController {
 
      List<Comment> comments = commentRepository.findByPublicationId(publicationId);
      for (Comment comment : comments) {
+      List<LikeComment> likecomments = likeCommentRepository.findByCommentId(comment.getId());
+      for (LikeComment like : likecomments) {
+        likeCommentRepository.delete(like);
+      }
          commentRepository.delete(comment);
      }
-                        
-
+     
     publicationRepository.delete(publication);
     return ResponseEntity.noContent().build();
   }
