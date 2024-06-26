@@ -2,6 +2,7 @@ package com.cordernot.controllers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cordernot.dto.CommentResponse;
 import com.cordernot.dto.PublicationRequest;
+import com.cordernot.dto.PublicationResponse;
 import com.cordernot.entities.Customer;
 import com.cordernot.entities.Dislike;
 import com.cordernot.entities.Like;
@@ -99,7 +102,7 @@ public class PublicationController {
   }
 
   @PostMapping("/{publicationId}/comment")
-  public ResponseEntity<Publication> commentPub(@PathVariable Long publicationId, @RequestParam Long customerId, @RequestBody PublicationRequest publicationRequest) {
+  public ResponseEntity<PublicationResponse> commentPub(@PathVariable Long publicationId, @RequestParam Long customerId, @RequestBody PublicationRequest publicationRequest) {
     Publication publication = publicationRepository.findById(publicationId)
                 .orElseThrow(() -> new RuntimeException("Publication not found"));
 
@@ -117,19 +120,41 @@ public class PublicationController {
     // Ajouter le commentaire à la publication
     publication.getComments().add(comment);
 
-    return ResponseEntity.ok(publication);
+    List<CommentResponse> comments = publication.getComments().stream()
+      .map(CommentResponse::new)
+      .collect(Collectors.toList());
+
+  PublicationResponse publicationResponse = new PublicationResponse(publication, comments);
+
+  return ResponseEntity.ok(publicationResponse);
   }
 
   @GetMapping("/{publicationId}/comments")
-  public ResponseEntity<List<Comment>> getComment(@PathVariable Long publicationId) {
+  public ResponseEntity<List<CommentResponse>> getComment(@PathVariable Long publicationId) {
     Publication publication = publicationRepository.findById(publicationId)
                 .orElseThrow(() -> new RuntimeException("Publication not found"));
 
-            // List<Comment> findByPublicationId(Long publicationId);
-    List<Comment> comments = commentRepository.findByPublicationId(publicationId);        
+    List<Comment> comments = commentRepository.findByPublicationId(publicationId);
 
-    return ResponseEntity.ok(comments);
+    // Convertir les Comment en CommentResponse
+    List<CommentResponse> commentResponses = comments.stream()
+            .map(CommentResponse::new)
+            .collect(Collectors.toList());
+
+    return ResponseEntity.ok(commentResponses);
   }
+
+
+  // @GetMapping("/{publicationId}/comments")
+  // public ResponseEntity<List<Comment>> getComment(@PathVariable Long publicationId) {
+  //   Publication publication = publicationRepository.findById(publicationId)
+  //               .orElseThrow(() -> new RuntimeException("Publication not found"));
+
+  //           // List<Comment> findByPublicationId(Long publicationId);
+  //   List<Comment> comments = commentRepository.findByPublicationId(publicationId);        
+
+  //   return ResponseEntity.ok(comments);
+  // }
   
   @PostMapping
   public ResponseEntity<Publication> createPublication(@RequestBody PublicationRequest publicationRequest) {

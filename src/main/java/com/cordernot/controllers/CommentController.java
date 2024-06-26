@@ -1,10 +1,12 @@
 package com.cordernot.controllers;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.cordernot.entities.Customer;
+import com.cordernot.entities.Like;
 import com.cordernot.entities.LikeComment;
 import com.cordernot.entities.Comment;
 import com.cordernot.repository.CommentRepository;
@@ -58,5 +61,19 @@ public class CommentController {
         commentRepository.save(comment);
         return ResponseEntity.ok(comment);
     }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Publication not found"));
+
+        List<LikeComment> likes = likeCommentRepository.findByCommentId(commentId);
+        for (LikeComment like : likes) {
+            likeCommentRepository.delete(like);
+        }
+
+        commentRepository.delete(comment);
+        return ResponseEntity.noContent().build();
+    }    
     
 }
