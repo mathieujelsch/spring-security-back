@@ -16,12 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cordernot.entities.Customer;
 import com.cordernot.entities.Like;
 import com.cordernot.entities.LikeComment;
+import com.cordernot.dto.PublicationRequest;
 import com.cordernot.entities.Comment;
 import com.cordernot.repository.CommentRepository;
 import com.cordernot.repository.CustomerRepository;
 import com.cordernot.repository.LikeCommentRepository;
 
-import org.springframework.web.bind.annotation.RequestParam;;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -76,4 +80,15 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }    
     
+    @PutMapping("/{commentId}")
+    public ResponseEntity<Comment> updateComment(@PathVariable Long commentId, @RequestBody PublicationRequest publicationRequest) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Publication not found"));
+
+
+        comment.setComment(publicationRequest.getComment());
+
+        commentRepository.save(comment);
+        return ResponseEntity.ok(comment);
+    }
 }

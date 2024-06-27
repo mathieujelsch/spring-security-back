@@ -144,17 +144,6 @@ public class PublicationController {
     return ResponseEntity.ok(commentResponses);
   }
 
-
-  // @GetMapping("/{publicationId}/comments")
-  // public ResponseEntity<List<Comment>> getComment(@PathVariable Long publicationId) {
-  //   Publication publication = publicationRepository.findById(publicationId)
-  //               .orElseThrow(() -> new RuntimeException("Publication not found"));
-
-  //           // List<Comment> findByPublicationId(Long publicationId);
-  //   List<Comment> comments = commentRepository.findByPublicationId(publicationId);        
-
-  //   return ResponseEntity.ok(comments);
-  // }
   
   @PostMapping
   public ResponseEntity<Publication> createPublication(@RequestBody PublicationRequest publicationRequest) {
